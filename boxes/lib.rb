@@ -70,9 +70,9 @@ module Simrb
 		#
 		# == Example
 		#
-		# 	system_get_data_block "demo"
+		# 	system_get_data_names "demo"
 		#
-		def system_get_data_block name = 'system'
+		def system_get_data_names name = 'system'
 			tables = []
 			name = '' if name == 'system'
 
