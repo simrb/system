@@ -1,0 +1,57 @@
+form
+	.box-1
+		.title = Sl[:'backup creating']
+		.body.checkall
+			label.lhover
+				label.pointer class='checkall-switch' #{Sl[:'select all']} >>
+			table
+				- @tables.each do | row |
+					tr
+						- row.each do | t |
+							td.mr10.lhover
+								input id="tn_#{t}" type="checkbox" name="table_name[]" value="#{t}"
+								label for="tn_#{t}" = t
+
+		.body
+			label.mr10 = Sl[:encoding]
+			input.mr10 type="text" name="encoding" value="#{@encoding}"
+
+		.body
+
+			label.mr10 = Sl[:filename]
+			input.mr10 type="text" name="filename" placeholder='file name'
+
+			input.button type="submit" name="backup" value="#{Sl[:backup]}" formaction="/_admin/baks/backup" formmethod="post"
+
+	.box-1
+
+		.title = Sl[:'backup operating']
+		table.table
+			thead
+				th file name
+				th recover
+				th export
+				th delete
+			tbody
+				- _fetch_backup_list.each do | f |
+					tr
+						td = f
+						td
+							a href="#{_url('', :opt => 'recover', :id => f, :encoding => @encoding)}" <<
+						td
+							a href="#{_url('', :opt => 'export', :id => f)}" >>
+
+						td
+							a href="#{_url('', :opt => 'delete', :id => f)}" >>
+
+		.body
+			input type="file" name="inport"
+			input.button type="submit" value="#{Sl[:'inport records']}" formaction="/_admin/baks/inport" formmethod="post" formenctype="multipart/form-data"
+
+		.body
+			p Tip: if you intend to make a recover, 
+			p you better to backup that table you want to recover at first, 
+			p for preventing lose your data if backup failure.
+
+
+	script src="#{_assets('system/js/view.js')}"

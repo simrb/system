@@ -1,0 +1,31 @@
+html, head, body, form, table, thead, tbody, th, tr, td, div, p, a, ul, ol, li, p, h1, h2, h3, h4, pre, code {margin: 0; padding: 0;}
+ul li {list-style-type: none;}
+
+#wrap 	{ margin: 20px; }
+#msg 	{ clear: both; width: 100%; }
+#footer { height: 100px; padding: 20px; margin-top: 100px; }
+#toTop  { background: black; }
+
+.clear {clear: both; margin-bottom: 10px;}
+.white {color: white;}
+.left {float: left;}
+.right {float: right;}
+.center {text-align: center;}
+.w100 {width: 100%;}
+.w99 {width: 99%;}
+.w90 {width: 90%;}
+.hide {display: none;}
+.pointer {cursor:pointer;}
+.button {width: 100px;}
+.mr10 {margin-right: 10px;}
+.mb10 {margin-bottom: 10px;}
+.mrb10 {margin: 0 10px 10px 0;}
+.text, article {
+	display: block;
+	word-wrap: normal;
+	word-break: keep-all;
+	white-space: normal;
+	overflow: ellipsis;
+	text-overflow: ellipsis;
+}
+

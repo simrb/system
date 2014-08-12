@@ -1,0 +1,31 @@
+#user_login
+	form action="#{_url2}" method="post"
+		p : h2 = Sl[:login]
+		p : label = Sl[:account]
+		p : input type="text" name="name" required="required" placeholder="#{Sl[:username]}"
+
+		p : label = Sl[:password]
+		p : input type="password" name="pawd" required="required" placeholder="#{Sl[:password]}"
+
+		p : input.button type="submit" value="#{Sl[:login]}"
+		p
+			input type="checkbox" name="rememberme" id="rememberme" value="yes"
+			label.font13 for="rememberme" = Sl[:rememberme]
+
+		- if _var(:allow_register, :user) == 'yes'
+			p.font13
+				a href="#{_url2(_var(:register, :link))}" = Sl[:register]
+
+css:
+
+	#user_login { 
+		width: 180px;
+		padding: 8px 20px;
+		border: 1px solid #AC8C80;
+	}
+	#user_login p {
+		margin-bottom: 8px; 
+	}
+	#user_login .font13 {
+		font-size: 13px;
+	}
