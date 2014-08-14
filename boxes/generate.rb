@@ -207,11 +207,11 @@ module Simrb
 		#
 		# == Examples
 		#
-		# 	$ 3s g_m demo
+		# 	$ 3s g m demo
 		#
 		# or, no writing the file, just display the generated content
 		#
-		# 	$ 3s g_m demo --nw
+		# 	$ 3s g m demo --nw
 		#
 		def g_migration args
 			args, opts		= Simrb.input_format args
@@ -228,11 +228,13 @@ module Simrb
 			create_tables 	= []
 			drop_tables		= []
 			alter_tables	= {}
-			origin_tables 	= Sdb.tables
+			origin_tables 	= system_get_data_names module_name, Sdb.tables
 			current_data 	= system_get_data_names module_name
 			all_tables		= (origin_tables + current_data).uniq
 
 			all_tables.each do | table |
+				data = _data_format table
+
 				# altered tables if the change is checked
 				if origin_tables.include?(table) and current_data.include?(table)
 
@@ -247,14 +249,14 @@ module Simrb
 						# removed fields
 						elsif origin_fields.include? field
 							alter_tables[table] ||= {}
-							alter_tables[table][:drop_fields] ||= []
-							alter_tables[table][:drop_fields] << field
+							alter_tables[table][:drop_column] ||= []
+							alter_tables[table][:drop_column] << [field]
 
 						# created fields
 						else
 							alter_tables[table] ||= {}
-							alter_tables[table][:add_fields] ||= []
-							alter_tables[table][:add_fields] << [field, current_fields[field]]
+							alter_tables[table][:add_column] ||= []
+							alter_tables[table][:add_column] << [field, data[field][:type]]
 						end
 					end
 
@@ -265,6 +267,14 @@ module Simrb
 				# created tables
 				else
 					create_tables << table
+				end
+			end
+
+			# generated result about altering operation
+			unless alter_tables.empty?
+				operations << :altered
+				alter_tables.each do | table, data |
+					res << system_generate_migration_altered(table, data)
 				end
 			end
 
@@ -284,14 +294,14 @@ module Simrb
 				end
 			end
 
+			dir 	= "#{Spath[:module]}#{module_name}#{Spath[:schema]}"
+			count 	= Dir[dir + "*"].count + 1
+			fname 	= args[1] ? args[1] : "#{operations.join('_')}_#{Time.now.strftime('%y%m%d')}" 
+			path 	= "#{dir}#{count.to_s.rjust(3, '0')}_#{fname}.rb"
+			res		= "Sequel.migration do\n\tchange do\n#{res}\tend\nend\n"
+
 			# write result to the migration file
 			if write_file
-				dir 	= "#{Spath[:module]}#{module_name}#{Spath[:schema]}"
-				count 	= Dir[dir + "*"].count + 1
-				fname 	= args[1] ? args[1] : "#{operations.join('_')}_#{Time.now.strftime('%y%m%d')}" 
-				path 	= "#{dir}#{count.to_s.rjust(3, '0')}_#{fname}.rb"
-				res		= "Sequel.migration do\n\tchange do\n#{res}\tend\nend\n"
-
 				Simrb.path_init path, res
 			end
 
