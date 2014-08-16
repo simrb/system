@@ -5,6 +5,8 @@
 
 module Simrb
 	module Stool
+		
+		# First of all, we assume the demo is a module name
 
 		# a shortcut for all of generating commands
 		#
@@ -461,13 +463,17 @@ module Simrb
 			res 
 		end
 
+		# generate many templates that is a collection of view operated event,
+		# it would copy the template layout, css, js, and helper
+		#
+		# == Example
+		#
+		# 	$ 3s g layout demo
+		#
 		def g_layout args = []
-			args += ['helper', 'layout2', 'css', 'js']
-			system_generate_tpl args
-			resh.each do | k, v |
-				res << "The following content would be generated at #{k} \n\n#{v}"
+			['helper2', 'layout2', 'css', 'js'].each do | tpl |
+				g_view(args.push(tpl))
 			end
-			res 
 		end
 
 		# generate the language sentence to file boxes/langs/*.en

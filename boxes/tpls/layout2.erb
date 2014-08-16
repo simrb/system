@@ -1,0 +1,21 @@
+doctype html
+html
+	head
+		title = @t[:title]
+		meta name="keywords" content="#{@t[:keywords]}"
+		meta name="description" content="#{@t[:description]}"
+		meta http-equiv="content-type" content="text/html; charset=UFT-8"
+		script src="#{_assets('system/js/jquery-172.js')}" type="text/javascript"
+		link rel="shortcut icon" href="#{_assets(_var(:shortcut_icon, :system))}"
+		link rel='stylesheet' type='text/css' href='#{_assets("system/css/style.css")}'
+
+	body
+		#wrap
+			#header
+
+			== _tpl(:_message)
+
+			#bodyer == yield
+
+		== _css("<%= @et[:name] %>/<%= @et[:name] %>.css")
+		== _js("<%= @et[:name] %>/<%= @et[:name] %>.js")

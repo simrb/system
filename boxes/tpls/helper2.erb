@@ -1,0 +1,8 @@
+helpers do
+
+	def <%= @et[:name] %>_page name
+		@t[:title] ||= Sl['<%= @et[:name] %>']
+		_tpl name, :<%= @et[:name] %>_layout
+	end
+
+end

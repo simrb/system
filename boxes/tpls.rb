@@ -1,7 +1,7 @@
 module Simrb
 	module Stool
 
-		# /before.rb
+		# /helper.rb
 		def system_tpl_helper module_name, file_name = ""
 			tpl = ""
 			tpl << "helpers '/#{module_name}/*' do\n\n"
@@ -18,10 +18,28 @@ module Simrb
 			{"#{Spath[:module]}#{module_name}/helpers.rb" => tpl}
 		end
 
+		# /helper.rb
+		def system_tpl_helper2 module_name, file_name = ""
+			@et 		= { :name => module_name }
+			tpl			= system_get_erb("#{Spath[:module]}system#{Spath[:tpl]}helper2.erb")
+			file_name 	= file_name == "" ? module_name : "#{module_name}_#{file_name}"
+			path		= "#{Spath[:module]}#{module_name}/helper.rb"
+			{"#{Spath[:module]}#{module_name}/helpers.rb" => tpl}
+		end
+
 		# /views/name_layout.slim
 		def system_tpl_layout module_name, file_name = ""
 			@et 		= { :name => module_name }
-			tpl			= system_get_erb("#{Spath[:module]}system#{Spath[:tpl_layout]}")
+			tpl			= system_get_erb("#{Spath[:module]}system#{Spath[:tpl]}layout.erb")
+			file_name 	= file_name == "" ? module_name : "#{module_name}_#{file_name}"
+			path		= "#{Spath[:module]}#{module_name}#{Spath[:view]}#{file_name}_layout.slim"
+			{path => tpl}
+		end
+
+		# /views/name_layout.slim
+		def system_tpl_layout2 module_name, file_name = ""
+			@et 		= { :name => module_name }
+			tpl			= system_get_erb("#{Spath[:module]}system#{Spath[:tpl]}layout2.erb")
 			file_name 	= file_name == "" ? module_name : "#{module_name}_#{file_name}"
 			path		= "#{Spath[:module]}#{module_name}#{Spath[:view]}#{file_name}_layout.slim"
 			{path => tpl}
@@ -30,7 +48,19 @@ module Simrb
 		# /boxes/assets/name.css
 		def system_tpl_css module_name, file_name = ""
 			tpl 		= ""
-			path 		= "#{Spath[:module]}system#{Spath[:tpl_css]}"
+			path 		= "#{Spath[:module]}system#{Spath[:tpl]}css.erb"
+			file_name 	= file_name == "" ? module_name : "#{module_name}_#{file_name}"
+			if File.exist? path
+				tpl << File.read(path)
+			end
+			{"#{Spath[:module]}#{module_name}#{Spath[:assets]}#{file_name}.css" => tpl}
+		end
+
+		# /boxes/assets/name.css
+		def system_tpl_css2 module_name, file_name = ""
+			@et 		= { :name => module_name }
+			tpl 		= ""
+			path 		= "#{Spath[:module]}system#{Spath[:tpl]}css2.erb"
 			file_name 	= file_name == "" ? module_name : "#{module_name}_#{file_name}"
 			if File.exist? path
 				tpl << File.read(path)
