@@ -195,10 +195,7 @@ module Simrb
 			path 	= "#{Spath[:module]}#{module_name}/data.rb"
 
 			if write_file
-				Simrb.path_init path
-				File.open(path, 'a') do | f |
-					f.write res
-				end
+				Simrb.path_write path, res, "a+"
  			end
 
 			# display result
@@ -304,7 +301,7 @@ module Simrb
 
 			# write result to the migration file
 			if write_file
-				Simrb.path_init path, res
+				Simrb.path_write path, res
 			end
 
 			# display result
@@ -381,7 +378,7 @@ module Simrb
 			res 	= "---\n" + "#{res}\n"*record_num
 
 			if write_file
-				Simrb.path_init path, res
+				Simrb.path_write path, res
 			end
 
 			# display the result
@@ -420,7 +417,7 @@ module Simrb
 				res << "#{resh}\n"
 			end
 
-			Simrb.path_init path, "---\n#{res}"
+			Simrb.path_write path, "---\n#{res}"
 
 			# display the result
 			"The following content would be generated at #{path} \n\n" << res
@@ -536,7 +533,7 @@ module Simrb
 				content = "---\n#{content}"
 
 				if write_file
-					Simrb.path_init path, content
+					Simrb.path_write path, content
 				end
 			end
 

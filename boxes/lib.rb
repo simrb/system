@@ -151,7 +151,7 @@ module Simrb
 				if self.respond_to? method.to_sym
 					resh = eval("#{method} '#{module_name}', '#{file_name}'")
 					res.merge! resh
-					Simrb.path_init resh.keys[0], resh.values[0]
+					Simrb.path_write resh.keys[0], resh.values[0]
 				end
 			end
 
