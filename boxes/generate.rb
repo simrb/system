@@ -38,6 +38,13 @@ module Simrb
 			end
 		end
 
+		# output content
+		def g_p path, res
+			puts "Path	=> #{path}"
+			puts "Puts	=> \n\n"
+			puts res
+		end
+
 		# generate the data block from a input array to a output hash
 		#
 		# == Examples
@@ -195,11 +202,11 @@ module Simrb
 			path 	= "#{Spath[:module]}#{module_name}/data.rb"
 
 			if write_file
-				Simrb.path_write path, res, "a+"
+				Simrb.path_write path, res
  			end
 
 			# display result
-			"The following content would be generated at #{path} \n\n" << res
+			g_p path, res
 		end
 
 		# generate the migration file by a gvied module name
@@ -305,7 +312,7 @@ module Simrb
 			end
 
 			# display result
-			"The following content would be generated at #{path} \n\n" << res
+			g_p path, res
 		end
 
 		# generate a file in installed dir
@@ -382,7 +389,7 @@ module Simrb
 			end
 
 			# display the result
-			"The following content would be generated at #{path} \n\n" << res
+			g_p path, res
 		end
 
 		# generate a list of administration menu of background to installs dir,
@@ -417,10 +424,11 @@ module Simrb
 				res << "#{resh}\n"
 			end
 
-			Simrb.path_write path, "---\n#{res}"
+			res = "---\n#{res}"
+			Simrb.path_write path, res
 
 			# display the result
-			"The following content would be generated at #{path} \n\n" << res
+			g_p path, res
 		end
 
 		# generate view files
@@ -537,7 +545,7 @@ module Simrb
 				end
 			end
 
-			"The following content would be generated at #{path} #{resp}"
+			g_p path, resp
 		end
 
 	end

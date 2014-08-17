@@ -28,7 +28,7 @@ module Simrb
 				end
 			end
 
-			"Successfully implemented the migration records"
+			puts "Successfully implemented the migration records"
 		end
 
 		# install a module
@@ -88,7 +88,7 @@ module Simrb
 				eval("#{installer}") if self.respond_to?(installer.to_sym)
 			end
 
-			"Successfully installed"
+			puts "Successfully installed"
 		end
 
 		# get a module from github to local modules dir
@@ -102,7 +102,7 @@ module Simrb
 			simrb_app = Simrb::Scommand.new
 			simrb_app.run(args.unshift('get'))
 
-			"Successfully got a module from remote repository"
+			puts "Successfully got a module from remote repository"
 		end
 
 		# create a module, initializes the default dirs and files of module
@@ -116,7 +116,7 @@ module Simrb
 			simrb_app = Simrb::Scommand.new
 			simrb_app.run(args.unshift('new'))
 
-			"Successfully initialized an empty module directory"
+			puts "Successfully initialized an empty module directory"
 		end
 
 	end
