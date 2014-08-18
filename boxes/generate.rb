@@ -460,12 +460,17 @@ module Simrb
 		# Above would generate a file demo_new_list.slim
 		#
 		def g_view args = []
-			res		= ""
-			resh 	= system_generate_tpl args
-			resh.each do | k, v |
-				res << "The following content would be generated at #{k} \n\n#{v}"
+			args, opts	= Simrb.input_format args
+			module_name = args.shift(1)[0]
+			file_name	= opts.empty? ? "" : opts.keys[0]
+
+			args.uniq!
+			args.each do | name |
+				method = "system_tpl_#{name}"
+				if self.respond_to? method.to_sym
+					eval("#{method} '#{module_name}', '#{file_name}'")
+				end
 			end
-			res 
 		end
 
 		# generate many templates that is a collection of view operated event,

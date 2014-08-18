@@ -122,7 +122,9 @@ module Simrb
 				t = ERB.new(content)
 				t.result(binding)
 			else
-				"No such the file at #{path}" 
+				res = "Warning: no file at #{path}"
+				puts res
+				res
 			end
 		end
 
@@ -139,24 +141,24 @@ module Simrb
 		#
 		# 	$ 3s system_generate_tpl demo --file_name layout
 		#
-		def system_generate_tpl args
-			args, opts	= Simrb.input_format args
-			module_name = args.shift(1)[0]
-			file_name	= opts.empty? ? "" : opts.keys[0]
-
-			res	= {}
-			args.uniq!
-			args.each do | name |
-				method = "system_tpl_#{name}"
-				if self.respond_to? method.to_sym
-					resh = eval("#{method} '#{module_name}', '#{file_name}'")
-					res.merge! resh
-					Simrb.path_write resh.keys[0], resh.values[0]
-				end
-			end
-
-			res
-		end
+# 		def system_generate_tpl args
+# 			args, opts	= Simrb.input_format args
+# 			module_name = args.shift(1)[0]
+# 			file_name	= opts.empty? ? "" : opts.keys[0]
+# 
+# 			res	= {}
+# 			args.uniq!
+# 			args.each do | name |
+# 				method = "system_tpl_#{name}"
+# 				if self.respond_to? method.to_sym
+# 					resh = eval("#{method} '#{module_name}', '#{file_name}'")
+# 					res.merge! resh
+# 					Simrb.path_write resh.keys[0], resh.values[0]
+# 				end
+# 			end
+# 
+# 			res
+# 		end
 
 		# generate file by path and content given
 		# 
