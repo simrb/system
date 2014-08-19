@@ -5,36 +5,58 @@
 
 module Simrb
 	module Stool
-		
-		# First of all, we assume the demo is a module name
+
+		# Note:
+		#
+		# 1, all of generating methods support the options --module_name, and --nw
+		# 2, assuming the demo is a module name, so the --module_name is --demo
+		# 3, the --nw option it means no writting to file, that method just displays the output
 
 		# a shortcut for all of generating commands
 		#
 		# == Example
 		#
-		# assume a module called demo, so
+		#	$ 3s g data demo_test name description --demo
+		#	$ 3s g migration --demo
+		#	$ 3s g view --demo form
 		#
-		#	$ 3s g data demo
-		#	$ 3s g m demo
-		#	$ 3s g view demo form
+		# the result same as,
 		#
-		# the result as same as the below, just lack of the underline between methods
-		#
-		# 	$ 3s g_data demo
-		# 	$ 3s g_m demo
-		#	$ 3s g_view demo form
+		#	$ 3s g d demo_test name description --demo
+		#	$ 3s g m --demo
+		#	$ 3s g v form --demo 
 		#
 		def g args = []
-			method = args.shift(1)[0]
+			# method aliases
+			shortcut	= {'m' => 'migration', 'i' => 'install', 'd' => 'data', 'v' => 'view'}
 
-			# transform method by short name
-			shortcut = {'m' => 'migration', 'inst' => 'install'}
-			method = shortcut[method] if shortcut.keys.include? method
-			method = 'g_' + method
+			method 		= args.shift(1)[0]
+			method 		= shortcut[method] if shortcut.keys.include? method
+			method 		= 'g_' + method
 
-			# implement
+			write_file	= true
+			module_name = Scfg[:module_focus] ? Scfg[:module_focus] : nil
+			args, opts	= Simrb.input_format args
+
+			if opts[:nw]
+				write_file = false
+				opts.delete :nw
+			end
+
+			unless opts.empty?
+				opts.each do | k, v |
+					if k.to_s.to_i == 0
+						module_name = k
+						opts.delete k
+					end
+				end
+			end
+
+			Simrb.p("no module name given", :exit) if module_name == nil
+
+			# implement the method
 			if Stool.method_defined? method
-				eval("#{method} #{args}")
+				eval("#{method} '#{module_name}', #{write_file}, #{args}, #{opts}")
 			end
 		end
 
@@ -51,7 +73,7 @@ module Simrb
 		#
 		# Example 01, normal mode
 		#
-		# 	$ 3s g_data table_name field1 field2
+		# 	$ 3s g data table_name field1 field2 --demo
 		#
 		# output
 		#
@@ -64,12 +86,12 @@ module Simrb
 		#
 		# or, no writing the file, just display the generated content
 		#
-		# 	$ 3s g_data table_name field1 field2 --nw
+		# 	$ 3s g_data table_name field1 field2 --demo --nw
 		#
 		#
 		# Example 02, specify the field type, by default, that is string
 		#
-		# 	$ 3s g_data table_name field1:pk field2:int field3:text field4
+		# 	$ 3s g data table_name field1:pk field2:int field3:text field4 --demo
 		#
 		# output
 		#
@@ -85,7 +107,7 @@ module Simrb
 		#
 		# Example 03, more parameters of field
 		#
-		# 	$ 3s g_data table_name field1:pk field2:int=1:label=newfieldname field3:int=1:assoc_one=table,name
+		# 	$ 3s g data table_name field1:pk field2:int=1:label=newfieldname field3:int=1:assoc_one=table,name --demo
 		#
 		# output
 		#
@@ -97,13 +119,10 @@ module Simrb
 		# 		}
 		# 	}
 		#
-		def g_data args = []
-			args, opts	= Simrb.input_format args
+		def g_data module_name, write_file, args, opts
 			auto		= opts[:auto] ? true : false
-			write_file	= opts[:nw] ? false : true
  			has_pk 		= false
 			table 		= args.shift
-			module_name = opts[:module] || (table.index('_') ? table.split('_').first : table)
 			key_alias 	= [:pk, :fk, :index, :unique]
 			data 		= {}
 
@@ -213,22 +232,13 @@ module Simrb
 		#
 		# == Examples
 		#
-		# 	$ 3s g m demo
+		# 	$ 3s g m --demo
 		#
 		# or, no writing the file, just display the generated content
 		#
-		# 	$ 3s g m demo --nw
+		# 	$ 3s g m --demo --nw
 		#
-		def g_migration args
-			args, opts		= Simrb.input_format args
-			write_file		= opts[:nw] ? false : true
-
-			if args.empty?
-				Simrb.p "no module name given", :exit
-			else
-				module_name = args[0]
-			end
-
+		def g_migration module_name, write_file, args, opts
 			res				= ''
 			operations		= []
 			create_tables 	= []
@@ -319,46 +329,31 @@ module Simrb
 		#
 		# == Example
 		#
-		# Example 01, the option starts with `--` that is module name
-		# or, no writing the file, just display the generated content
 		#
-		# 	$ 3s g install --demo _menu
-		# 	$ 3s g install --demo _menu --nw
-		# 	$ 3s g install --demo _menu name:myMenu link:myLink 
+		# Example 01, normal mode
 		#
-		# Example 02, `inst` is a alias name of `install`
+		# 	$ 3s g install _menu --demo 
+		# 	$ 3s g install _menu --demo --nw
+		# 	$ 3s g install _menu name:myMenu link:myLink --demo 
+		#
+		# or take it with an alias name of `i`
 		# 
-		# 	$ 3s g inst _vars vkey:myvar vval:myval --demo
+		# 	$ 3s g i _vars --demo
 		#
-		# Example 03, by default, the prefix of table is module name
 		#
-		# 	$ 3s g inst demo_post
+		# Example 02, create many records at one time, -3 that means creating 3 records
 		#
-		# Example 04, create many records at one time
+		# 	$ 3s g i _vars --demo -3
 		#
-		# 	$ 3s g inst demo_post -3
-		#
-		def g_install args
-			args, opts	= Simrb.input_format args
-			module_name = args[0].split("_").first
-			write_file	= true
-			record_num	= 2
-			res 		= ""
+		def g_install module_name, write_file, args, opts
+			record_num		= 2
+			field_ignore 	= [:created, :changed, :parent]
+			res 			= ""
 
-			# does it have specified the module name, 
-			# or how many the number of records ?
+			# how many records would be created?
 			unless opts.empty?
-				if opts[:nw]
-					write_file = false
-					opts.delete :nw
-				end
-
 				opts.keys.each do | k |
-					if k.to_s.to_i == 0
-						module_name = k
-					else
-						record_num	= k.to_s.to_i
-					end
+					record_num = k.to_s.to_i if k.to_s.to_i > 0
 				end
 			end
 
@@ -374,7 +369,7 @@ module Simrb
 
 			_data_format(table_name).each do | k, v |
 				if v.include? :primary_key
-				elsif [:created, :changed, :parent].include? k
+				elsif field_ignore.include? k
 				else
 					v[:default] = resh[k] if resh.include? k
 					res << "  #{k.to_s.ljust(15)}: #{v[:default]}\n"
@@ -392,17 +387,17 @@ module Simrb
 			g_p path, res
 		end
 
-		# generate a list of administration menu of background to installs dir,
-		# virtually, this is extension for installing data generated of _menu item
+		# generate many menus of admin of background
+		# virtually, this is extension for data generated of _menu in installs dir
 		#
 		# == Example
 		#
-		# 	$ 3s g_admin demo
+		# 	$ 3s g_admin --demo
 		#
-		def g_admin args
-			module_name	= args.shift(1)[0]
+		def g_admin module_name, write_file, args, opts
 			path 		= system_add_suffix "#{Spath[:module]}#{module_name}#{Spath[:install]}_menu"
 
+			# menu datas
 			menu_data 	= [
 				{name: module_name, link: "/_admin/info/#{module_name}", tag: 'admin'},
 			]
@@ -413,7 +408,7 @@ module Simrb
 				menu_data << {name: menu_name, link: "/_admin/view/#{name}", parent: module_name, tag: 'admin'}
 			end
 
-			# turn the hash to string of yaml style
+			# turn the hash to string for writting as yaml file
 			res = ""
 			menu_data.each do | item |
 				resh = ""
@@ -437,34 +432,20 @@ module Simrb
 		#
 		# Example 01, create a layout template
 		#
-		# 	$ 3s g view demo layout
+		# 	$ 3s g view layout --demo 
 		#
-		# by default, the file demo_layout.slim would be generated,
+		# or, other template you should try
 		#
+		# 	$ 3s g view form --demo 
 		#
-		# Example 02, or specify the file name with option --, like below
+		# or specify the file name with option --filename
 		#
-		# 	$ 3s g view demo --my layout
+		# 	$ 3s g view form --demo --filename=myform
 		#
-		# that created a file demo_my_layout.slim
+		# by default, the file demo_myform.slim would be generated,
 		#
-		#
-		# Example 03, more about the file name option
-		#
-		# 	$ 3s g view demo list --new_list
-		#
-		# same as
-		#
-		# 	$ 3s g view demo --new_list list
-		#
-		# Above would generate a file demo_new_list.slim
-		#
-		def g_view args = []
-			args, opts	= Simrb.input_format args
-			module_name = args.shift(1)[0]
-			file_name	= opts.empty? ? "" : opts.keys[0]
-
-			args.uniq!
+		def g_view module_name, write_file, args, opts
+ 			file_name = opts[:filename] ? opts[:filename] : args[0]
 			args.each do | name |
 				method = "system_tpl_#{name}"
 				if self.respond_to? method.to_sym
@@ -478,11 +459,11 @@ module Simrb
 		#
 		# == Example
 		#
-		# 	$ 3s g layout demo
+		# 	$ 3s g layout --demo
 		#
-		def g_layout args = []
+		def g_layout module_name, write_file, args, opts
 			['helper2', 'layout2', 'css', 'js'].each do | tpl |
-				g_view(args.push(tpl))
+				g_view(module_name, write_file, args.push(tpl), opts)
 			end
 		end
 
@@ -490,24 +471,18 @@ module Simrb
 		#
 		# == Example
 		#
-		# 	$ 3s g lang demo en
+		# 	$ 3s g lang en --demo 
 		#
 		# or, like this
 		#
-		# 	$ 3s g lang demo jp
-		# 	$ 3s g lang demo cn
-		# 	$ 3s g lang demo de
+		# 	$ 3s g lang jp --demo 
+		# 	$ 3s g lang cn --demo 
+		# 	$ 3s g lang de --demo 
 		#
-		# or, just display the result rather than write result to file
-		#
-		# 	$ 3s g lang demo en --nw
-		#
-		def g_lang args = []
-			args, opts	= Simrb.input_format args
-			write_file	= opts[:nw] ? false : true
-			module_name = args.shift(1)[0]
+		def g_lang module_name, write_file, args, opts
 			lang		= args[0] ? args[0] : Scfg[:lang]
 			dirs		= Dir["#{Spath[:module]}#{module_name}#{Spath[:lang]}*.#{lang}"]
+			scan_path 	= "#{Spath[:module]}#{module_name}"
 			old_path 	= ""
 			resp 		= ""
 			data		= {}
@@ -518,11 +493,11 @@ module Simrb
 			end
 
 			Dir[
-				"#{Spath[:module]}#{module_name}#{Spath[:logic]}*.rb",
-				"#{Spath[:module]}#{module_name}/*.rb",
-				"#{Spath[:module]}#{module_name}#{Spath[:store]}*.rb",
-				"#{Spath[:module]}#{module_name}#{Spath[:tool]}*.rb",
-				"#{Spath[:module]}#{module_name}#{Spath[:view]}*.slim",
+				"#{scan_path}#{Spath[:logic]}*.rb",
+				"#{scan_path}/*.rb",
+				"#{scan_path}#{Spath[:store]}*.rb",
+				"#{scan_path}#{Spath[:tool]}*.rb",
+				"#{scan_path}#{Spath[:view]}*.slim",
 			].each do | path |
 				system_match_lang(File.read(path)).each do | name |
 					unless data.has_key? name
