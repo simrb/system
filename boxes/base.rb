@@ -20,8 +20,8 @@ module Simrb
 		#
 		def db args = []
 			args = Smodules if args.empty?
-			args.each do | mod_name |
-				path = "modules/#{mod_name}#{Spath[:schema]}".chomp("/")
+			args.each do | module_name |
+				path = "#{Spath[:module]}/#{module_name}#{Spath[:schema]}".chomp("/")
 				if Dir[path + '/*'].count > 0
 					Sequel.extension :migration
 					Sequel::Migrator.run(Sdb, path, :column => mod_name.to_sym, :table => :_schemas)
