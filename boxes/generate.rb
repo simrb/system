@@ -61,7 +61,11 @@ module Simrb
 		end
 
 		# output content
-		def g_p path, res
+		def system_implement_generated write_file, path, res, mode = "a+"
+			# write result
+			Simrb.path_write path, res, mode if write_file
+
+			# display result
 			puts "Path	=> #{path}"
 			puts "Puts	=> \n\n"
 			puts res
@@ -220,12 +224,7 @@ module Simrb
 			res 	= system_data_to_str table, data
 			path 	= "#{Spath[:module]}#{module_name}/data.rb"
 
-			if write_file
-				Simrb.path_write path, res
- 			end
-
-			# display result
-			g_p path, res
+			system_implement_generated write_file, path, res
 		end
 
 		# generate the migration file by a gvied module name
@@ -234,7 +233,7 @@ module Simrb
 		#
 		# 	$ 3s g m --demo
 		#
-		# or, no writing the file, just display the generated content
+		# or, no writting the file, just display the generated content
 		#
 		# 	$ 3s g m --demo --nw
 		#
@@ -316,13 +315,7 @@ module Simrb
 			path 	= "#{dir}#{count.to_s.rjust(3, '0')}_#{fname}.rb"
 			res		= "Sequel.migration do\n\tchange do\n#{res}\tend\nend\n"
 
-			# write result to the migration file
-			if write_file
-				Simrb.path_write path, res
-			end
-
-			# display result
-			g_p path, res
+			system_implement_generated write_file, path, res
 		end
 
 		# generate a file in installed dir
@@ -379,12 +372,7 @@ module Simrb
 			res[0]	= "-"
 			res 	= "---\n" + "#{res}\n"*record_num
 
-			if write_file
-				Simrb.path_write path, res
-			end
-
-			# display the result
-			g_p path, res
+			system_implement_generated write_file, path, res
 		end
 
 		# generate many menus of admin of background
@@ -420,10 +408,9 @@ module Simrb
 			end
 
 			res = "---\n#{res}"
-			Simrb.path_write path, res
 
-			# display the result
-			g_p path, res
+			# implement result
+			system_implement_generated write_file, path, res
 		end
 
 		# generate view files
@@ -445,11 +432,10 @@ module Simrb
 		# by default, the file demo_myform.slim would be generated,
 		#
 		def g_view module_name, write_file, args, opts
- 			file_name = opts[:filename] ? opts[:filename] : args[0]
 			args.each do | name |
 				method = "system_tpl_#{name}"
 				if self.respond_to? method.to_sym
-					eval("#{method} '#{module_name}', '#{file_name}'")
+					eval("#{method} '#{module_name}', #{write_file}, #{args}, #{opts}")
 				end
 			end
 		end
@@ -463,7 +449,8 @@ module Simrb
 		#
 		def g_layout module_name, write_file, args, opts
 			['helper2', 'layout2', 'css', 'js'].each do | tpl |
-				g_view(module_name, write_file, args.push(tpl), opts)
+ 				g_view(module_name, write_file, (args + [tpl]), opts)
+				puts "\n" + "-"*30 + "\n\n"
 			end
 		end
 
@@ -485,8 +472,9 @@ module Simrb
 			scan_path 	= "#{Spath[:module]}#{module_name}"
 			old_path 	= ""
 			resp 		= ""
+			res			= ""
+			resh		= {}
 			data		= {}
-			res			= {}
 
 			dirs.each do | path |
 				data.merge! Simrb.yaml_read path
@@ -501,7 +489,7 @@ module Simrb
 			].each do | path |
 				system_match_lang(File.read(path)).each do | name |
 					unless data.has_key? name
-						res[name] = name
+						resh[name] = name
 						unless old_path == path
 							old_path = path
 							resp << "\n\nExtracting from: #{old_path}"
@@ -513,19 +501,17 @@ module Simrb
 
 			# write content to file
 			unless res.empty?
-				path 	= "#{Spath[:module]}#{module_name}#{Spath[:lang]}#{module_name}#{(dirs.count + 1)}.#{lang}"
-				content = ""
-				res.each do | k, v |
-					content << "#{k.ljust(20)}: #{v}\n"
+				path = "#{Spath[:module]}#{module_name}#{Spath[:lang]}#{module_name}#{(dirs.count + 1)}.#{lang}"
+				res	= ""
+				resh.each do | k, v |
+					res << "#{k.ljust(20)}: #{v}\n"
 				end
-				content = "---\n#{content}"
+				res = "---\n#{res}"
 
-				if write_file
-					Simrb.path_write path, content
-				end
+				Simrb.path_write path, res if write_file
 			end
 
-			g_p path, resp
+			system_implement_generated false, path, resp
 		end
 
 	end
