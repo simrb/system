@@ -19,7 +19,7 @@ module Simrb
 		# 	$ 3s db user cms
 		#
 		def db args = []
-			args = Smodules if args.empty?
+			args = Smodules.keys if args.empty?
 			args.each do | module_name |
 				path = "#{Spath[:module]}/#{module_name}#{Spath[:schema]}".chomp("/")
 				if Dir[path + '/*'].count > 0
@@ -44,7 +44,7 @@ module Simrb
 		# 	$ 3s install blog
 		#
 		def install args = []
-			args = Smodules if args.empty?
+			args = Smodules.keys if args.empty?
 
 			# step 1, run migration files
 			puts db(args)
