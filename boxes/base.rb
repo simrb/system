@@ -101,8 +101,6 @@ module Simrb
 			require 'simrb/comd'
 			simrb_app = Simrb::Scommand.new
 			simrb_app.run(args.unshift('get'))
-
-			puts "Successfully got a module from remote repository"
 		end
 
 		# create a module, initializes the default dirs and files of module
@@ -115,8 +113,6 @@ module Simrb
 			require 'simrb/comd'
 			simrb_app = Simrb::Scommand.new
 			simrb_app.run(args.unshift('new'))
-
-			puts "Successfully initialized an empty module directory"
 		end
 
 	end
