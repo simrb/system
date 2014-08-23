@@ -55,8 +55,10 @@ module Simrb
 			Simrb.p("no module name given", :exit) if module_name == nil
 
 			# implement the method
-			if Stool.method_defined? method
+			if Stool.public_instance_methods.include? method.to_sym
 				eval("#{method} '#{module_name}', #{write_file}, #{args}, #{opts}")
+			else
+				puts "No method #{method} defined"
 			end
 		end
 
