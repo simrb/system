@@ -25,7 +25,8 @@ module Simrb
 		#
 		def system_get_install_file module_name
 			res			= {}
-			files 		= Dir["#{Spath[:module]}#{module_name.to_s}#{Spath[:install]}*"]
+			module_name	= module_name.to_s
+			files 		= Dir["#{Smods[module_name]}#{Spath[:install]}*"]
 
 			files_path	= Spath[:install_lock_file]
 			files_lock	= []

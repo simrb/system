@@ -12,7 +12,7 @@ end
 get '/_assets/*' do
 	path_items 	= request.path.split('/')
 	module_name	= path_items.shift(3)[2]
-	path 		= "#{Spath[:module]}#{module_name}#{Spath[:assets]}#{path_items.join('/')}"
+	path 		= "#{Smods[module_name]}#{Spath[:assets]}#{path_items.join('/')}"
 
 	send_file path, :type => request.path.split('.').last().to_sym
 end
@@ -74,7 +74,7 @@ get '/_file/get/:file_num' do
 		send_file Spath[:upload_dir] + ds.get(:path).to_s, :type => ds.get(:type).split('/').last.to_sym
 	else
 		module_name = "system"
-		path = "#{Spath[:module]}#{module_name}#{Spath[:assets]}images/default.jpg"
+		path = "#{Smods[module_name]}#{Spath[:assets]}images/default.jpg"
 		send_file path, :type => :jpeg
 	end
 end

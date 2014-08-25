@@ -224,7 +224,7 @@ module Simrb
 
 			# write content to data.rb
 			res 	= system_data_to_str table, data
-			path 	= "#{Spath[:module]}#{module_name}/data.rb"
+			path 	= "#{Smods[module_name]}/data.rb"
 
 			system_implement_generated write_file, path, res
 		end
@@ -311,7 +311,7 @@ module Simrb
 				end
 			end
 
-			dir 	= "#{Spath[:module]}#{module_name}#{Spath[:schema]}"
+			dir 	= "#{Smods[module_name]}#{Spath[:schema]}"
 			count 	= Dir[dir + "*"].count + 1
 			fname 	= args[1] ? args[1] : "#{operations.join('_')}_#{Time.now.strftime('%y%m%d')}" 
 			path 	= "#{dir}#{count.to_s.rjust(3, '0')}_#{fname}.rb"
@@ -353,7 +353,7 @@ module Simrb
 			end
 
 			table_name	= args.shift(1)[0]
-			path 		= system_add_suffix "#{Spath[:module]}#{module_name}#{Spath[:install]}#{table_name}"
+			path 		= system_add_suffix "#{Smods[module_name]}#{Spath[:install]}#{table_name}"
 
 			# default value of given by command arguments
 			resh 		= {}
@@ -385,7 +385,7 @@ module Simrb
 		# 	$ 3s g_admin --demo
 		#
 		def g_admin module_name, write_file, args, opts
-			path 		= system_add_suffix "#{Spath[:module]}#{module_name}#{Spath[:install]}_menu"
+			path 		= system_add_suffix "#{Smods[module_name]}#{Spath[:install]}_menu"
 
 			# menu datas
 			menu_data 	= [
@@ -470,8 +470,7 @@ module Simrb
 		#
 		def g_lang module_name, write_file, args, opts
 			lang		= args[0] ? args[0] : Scfg[:lang]
-			dirs		= Dir["#{Spath[:module]}#{module_name}#{Spath[:lang]}*.#{lang}"]
-			scan_path 	= "#{Spath[:module]}#{module_name}"
+			dirs		= Dir["#{Smods[module_name]}#{Spath[:lang]}*.#{lang}"]
 			old_path 	= ""
 			resp 		= ""
 			res			= ""
@@ -483,11 +482,11 @@ module Simrb
 			end
 
 			Dir[
-				"#{scan_path}#{Spath[:logic]}*.rb",
-				"#{scan_path}/*.rb",
-				"#{scan_path}#{Spath[:store]}*.rb",
-				"#{scan_path}#{Spath[:tool]}*.rb",
-				"#{scan_path}#{Spath[:view]}*.slim",
+				"#{Smods[module_name]}#{Spath[:logic]}*.rb",
+				"#{Smods[module_name]}/*.rb",
+				"#{Smods[module_name]}#{Spath[:store]}*.rb",
+				"#{Smods[module_name]}#{Spath[:tool]}*.rb",
+				"#{Smods[module_name]}#{Spath[:view]}*.slim",
 			].each do | path |
 				system_match_lang(File.read(path)).each do | name |
 					unless data.has_key? name
@@ -503,7 +502,7 @@ module Simrb
 
 			# write content to file
 			unless res.empty?
-				path = "#{Spath[:module]}#{module_name}#{Spath[:lang]}#{module_name}#{(dirs.count + 1)}.#{lang}"
+				path = "#{Smods[module_name]}#{Spath[:lang]}#{module_name}#{(dirs.count + 1)}.#{lang}"
 				res	= ""
 				resh.each do | k, v |
 					res << "#{k.ljust(20)}: #{v}\n"

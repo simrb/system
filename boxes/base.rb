@@ -16,51 +16,53 @@ module Simrb
 		#
 		# run the migrations for the specified module 
 		#
-		# 	$ 3s db user cms
+		# 	$ 3s db demo blog
 		#
 		def db args = []
-			args = Smodules.keys if args.empty?
+			puts "Starting to implement the migration records of database ..."
+			args = Smods.keys if args.empty?
+
 			args.each do | module_name |
-				path = "#{Spath[:module]}/#{module_name}#{Spath[:schema]}".chomp("/")
+				path = "#{Smods[module_name]}/#{Spath[:schema]}".chomp("/")
 				if Dir[path + '/*'].count > 0
 					Sequel.extension :migration
-					Sequel::Migrator.run(Sdb, path, :column => mod_name.to_sym, :table => :_schemas)
+					Sequel::Migrator.run(Sdb, path, :column => module_name.to_sym, :table => :_schemas)
 				end
 			end
 
-			puts "Successfully implemented the migration records"
+			puts "Implemented completion"
 		end
 
-		# install a module
+		# run the bundled operation for module
 		#
-		# == Examples
-		# 
-		# install all of module, it will auto detects
+		# == Example
 		#
-		# 	$ 3s install
+		# 	$ 3s bundle demo
 		#
-		# or, install the specified module
-		# 	
-		# 	$ 3s install blog
-		#
-		def install args = []
-			args = Smodules.keys if args.empty?
+		def bundle args = []
+			puts "Starting to bunlde gemfile for modules ..."
+			args = Smods.keys if args.empty?
 
-			# step 1, run migration files
-			puts db(args)
-
-			# step 2, run the gemfile
 			args.each do | module_name |
-				path = "#{Spath[:module]}#{module_name}#{Spath[:gemfile]}"
+				path = "#{Smods[module_name]}#{Spath[:gemfile]}"
 				if File.exist? path
 					`bundle install --gemfile=#{path}`
 				end
 			end
 
-			puts "Implemented the bundle install complete"
-			puts "Starting to submit data of installing directory to database"
+			puts "Implemented completion"
+		end
 
-			# step 3, submit the data to database
+		# submit the data to database
+		#
+		# == Example
+		#
+		# 	$ 3s submit demo
+		#
+		def submit args = []
+			puts "Starting to submit data to database ..."
+			args = Smods.keys if args.empty?
+
 			args.each do | module_name |
 				# installed hoot before
 				installer = "#{module_name}_install_before"
@@ -87,6 +89,33 @@ module Simrb
 				installer = "#{module_name}_install_after"
 				eval("#{installer}") if self.respond_to?(installer.to_sym)
 			end
+
+			puts "Implemented completion"
+		end
+
+		# install a module
+		#
+		# == Examples
+		# 
+		# install all of module, it will auto detects
+		#
+		# 	$ 3s install
+		#
+		# or, install the specified module
+		# 
+		# 	$ 3s install blog
+		#
+		def install args = []
+			puts "Starting to install ..."
+
+			# step 1, run migration files
+			db args
+
+			# step 2, run the gemfile
+			bundle args
+
+			# step 3, submit the data to database
+			submit args
 
 			puts "Successfully installed"
 		end
