@@ -51,7 +51,7 @@ module Simrb
 			system_implement_generated write_file, path, tpl
 		end
 
-		# /boxes/assets/name.css
+		# /store/assets/name.css
 		def system_tpl_css module_name, write_file, args, opts
 			tpl 		= system_get_erb "#{Smods['system']}#{Spath[:tpl]}css.erb"
 			file_name 	= opts[:filename] ? "#{module_name}_#{opts[:filename]}" : module_name
@@ -60,7 +60,7 @@ module Simrb
 			system_implement_generated write_file, path, tpl
 		end
 
-		# /boxes/assets/name.css
+		# /store/assets/name.css
 		def system_tpl_css2 module_name, write_file, args, opts
 			@et 		= { :name => module_name }
 			tpl 		= system_get_erb "#{Smods['system']}#{Spath[:tpl]}css2.erb"
@@ -70,7 +70,7 @@ module Simrb
 			system_implement_generated write_file, path, tpl
 		end
 
-		# /boxes/assets/name.js
+		# /store/assets/name.js
 		def system_tpl_js module_name, write_file, args, opts
 			tpl 		= ""
 			file_name 	= opts[:filename] ? "#{module_name}_#{opts[:filename]}" : module_name

@@ -456,7 +456,7 @@ module Simrb
 			end
 		end
 
-		# generate the language sentence to file boxes/langs/*.en
+		# generate the language sentence to file store/langs/*.en
 		#
 		# == Example
 		#
