@@ -191,6 +191,17 @@ module Simrb
 			res
 		end
 
+		# output content
+		def system_implement_generated write_file, path, res, mode = "a+"
+			# write result
+			Simrb.path_write path, res, mode if write_file
+
+			# display result
+			puts "Path	=> #{path}"
+			puts "Puts	=> \n\n"
+			puts res
+		end
+
 	end
 end
 

@@ -27,11 +27,8 @@ module Simrb
 		#	$ 3s g v form --demo 
 		#
 		def g args = []
-			# method aliases
-			shortcut	= {'m' => 'migration', 'i' => 'install', 'd' => 'data', 'v' => 'view'}
-
 			method 		= args.shift(1)[0]
-			method 		= shortcut[method] if shortcut.keys.include? method
+			method 		= Scfg[:g_alias][method] if Scfg[:g_alias].keys.include? method
 			method 		= 'g_' + method
 
 			write_file	= true
@@ -62,22 +59,10 @@ module Simrb
 			end
 		end
 
-		# output content
-		def system_implement_generated write_file, path, res, mode = "a+"
-			# write result
-			Simrb.path_write path, res, mode if write_file
-
-			# display result
-			puts "Path	=> #{path}"
-			puts "Puts	=> \n\n"
-			puts res
-		end
-
 		# generate the data block from a input array to a output hash
 		#
-		# == Examples
 		#
-		# Example 01, normal mode
+		# == Example 01, normal mode
 		#
 		# 	$ 3s g data table_name field1 field2 --demo
 		#
@@ -95,7 +80,7 @@ module Simrb
 		# 	$ 3s g_data table_name field1 field2 --demo --nw
 		#
 		#
-		# Example 02, specify the field type, by default, that is string
+		# == Example 02, specify the field type, by default, that is string
 		#
 		# 	$ 3s g data table_name field1:pk field2:int field3:text field4 --demo
 		#
@@ -111,7 +96,7 @@ module Simrb
 		# 	}
 		#
 		#
-		# Example 03, more parameters of field
+		# == Example 03, more parameters of field
 		#
 		# 	$ 3s g data table_name field1:pk field2:int=1:label=newfieldname field3:int=1:assoc_one=table,name --demo
 		#
@@ -322,10 +307,7 @@ module Simrb
 
 		# generate a file in installed dir
 		#
-		# == Example
-		#
-		#
-		# Example 01, normal mode
+		# == Example 01, normal mode
 		#
 		# 	$ 3s g install _menu --demo 
 		# 	$ 3s g install _menu --demo --nw
@@ -335,8 +317,7 @@ module Simrb
 		# 
 		# 	$ 3s g i _vars --demo
 		#
-		#
-		# Example 02, create many records at one time, -3 that means creating 3 records
+		# == Example 02, create many records at one time, -3 that means creating 3 records
 		#
 		# 	$ 3s g i _vars --demo -3
 		#
