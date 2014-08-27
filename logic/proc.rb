@@ -214,7 +214,7 @@ helpers do
 					val[:form_type] = :radio 
 				elsif val.include? :assoc_many
 					val[:form_type] = :checkbox 
-				elsif Scfg[:number_types].include? val[:type]
+				elsif Scfg[:field_number].include? val[:type]
 					val[:form_type] = :number 
 				elsif val[:type] == 'Text'
 					val[:form_type] = :textarea 
@@ -243,7 +243,7 @@ helpers do
 
 				# second, judge by assoc_one, or assoc_many, or primary_key
 				elsif val.include?(:assoc_one) or val.include?(:assoc_many) or val.include?(:primary_key)
-					val[:type] = Scfg[:number_types][0]
+					val[:type] = Scfg[:field_number][0]
 					val[:default] = 1
 
 				# others, matches by field name
@@ -256,7 +256,7 @@ helpers do
 			# default value of field
 			unless val.include? :default
 				if val.include? :type
-					if Scfg[:number_types].include? val[:type]
+					if Scfg[:field_number].include? val[:type]
 						val[:default] = 1
 					end
 				end
@@ -269,10 +269,10 @@ helpers do
 	def _match_field_type field
 		field = field.to_s
 		if field[-2,2] == 'id'
-			type = Scfg[:number_types][0]
-		elsif Scfg[:fixnum_types].include? field
+			type = Scfg[:field_number][0]
+		elsif Scfg[:field_fixnum].include? field
 			type = 'Fixnum'
-		elsif Scfg[:time_types].include? field
+		elsif Scfg[:field_time].include? field
 			type = 'Time'
 		else
 			type = 'String'

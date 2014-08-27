@@ -28,7 +28,7 @@ module Simrb
 			module_name	= module_name.to_s
 			files 		= Dir["#{Smods[module_name]}#{Spath[:install]}*"]
 
-			files_path	= Spath[:install_lock_file]
+			files_path	= Spath[:install_lock]
 			files_lock	= []
 
 			if Scfg[:install_lock] == 'yes'

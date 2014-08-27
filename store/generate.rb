@@ -28,7 +28,7 @@ module Simrb
 		#
 		def g args = []
 			method 		= args.shift(1)[0]
-			method 		= Scfg[:g_alias][method] if Scfg[:g_alias].keys.include? method
+			method 		= Scfg[:alias_gcmd][method] if Scfg[:alias_gcmd].keys.include? method
 			method 		= 'g_' + method
 
 			write_file	= true
@@ -148,8 +148,8 @@ module Simrb
 							type = (arr.shift).to_sym
 
 							# normal field type
-							if Scfg[:field_alias].keys.include? type
-								data[field][:type] = Scfg[:field_alias][type]
+							if Scfg[:alias_fields].keys.include? type
+								data[field][:type] = Scfg[:alias_fields][type]
 
 							# main keys
 							elsif key_alias.include? type
@@ -187,9 +187,9 @@ module Simrb
 			# because those operatings could be ignored at last step.
 			data.each do | field, vals |
 				# replace the field type with its alias
-				Scfg[:field_alias].keys.each do | key |
+				Scfg[:alias_fields].keys.each do | key |
 					if data[field].include? key
-						data[field][:type] 		= Scfg[:field_alias][key]
+						data[field][:type] 		= Scfg[:alias_fields][key]
 						data[field][:default] 	= key == :int ? data[field][key].to_i : data[field][key]
 						data[field].delete key
 					end
@@ -197,7 +197,7 @@ module Simrb
 
 				# the association field that default type is Fixnum (integer)
 				if data[field].include? :assoc_one
-					data[field][:type] = Scfg[:number_types][0]
+					data[field][:type] = Scfg[:field_number][0]
 				end
 			end
 
